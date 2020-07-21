@@ -1,43 +1,29 @@
 FROM php:7.4-apache
 
-# ä¬ã´ïœêî
-ENV DEBCONF_NOWARNINGS yes
+COPY ./php.ini /usr/local/etc/php/
+COPY ./000-default.conf /etc/apache2/sites-enabled/
 
-RUN apt-get update && apt-get install -y apt-utils apt-transport-https \
-      libicu-dev \
-      libpq-dev \
-      libonig-dev \
-      mariadb-client-10.3 \
-      git \
-      zip \
-      unzip \
-      libfreetype6-dev \
-      libpng-dev \
-      libjpeg-dev \
-    && rm -r /var/lib/apt/lists/* \
-    && docker-php-ext-configure pdo_mysql --with-pdo-mysql=mysqlnd \
-    && docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
-    && docker-php-ext-install \
-      intl \
-      openssl \
-      pcntl \
-      pdo_mysql \
-      pdo_pgsql \
-      pgsql \
-      zip \
-      gd
+# db
+RUN apt-get update \
+  && apt-get install -y zlib1g-dev mariadb-client vim libzip-dev \
+  && docker-php-ext-install zip pdo_mysql
 
-ENV APP_HOME /var/www/html
+# gd
+RUN apt-get install -y wget libjpeg-dev libfreetype6-dev
+RUN apt-get install -y  libmagick++-dev \
+libmagickwand-dev \
+libpq-dev \
+libfreetype6-dev \
+libjpeg62-turbo-dev \
+libpng-dev \
+libwebp-dev \
+libxpm-dev
 
-RUN usermod -u 1000 www-data && groupmod -g 1000 www-data
+RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/
+RUN docker-php-ext-install -j$(nproc) gd
 
-RUN sed -i -e "s/html/html\/webroot/g" /etc/apache2/apache2.conf
-
+# apache rewrite
 RUN a2enmod rewrite
 
-COPY . $APP_HOME
-
-RUN chown -R www-data:www-data $APP_HOME
-
-COPY php.ini /usr/local/etc/php/
+WORKDIR /var/www/html
 
