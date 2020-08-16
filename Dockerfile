@@ -11,16 +11,19 @@ RUN apt-get update \
 # gd
 RUN apt-get install -y wget libjpeg-dev libfreetype6-dev
 RUN apt-get install -y  libmagick++-dev \
-libmagickwand-dev \
-libpq-dev \
-libfreetype6-dev \
-libjpeg62-turbo-dev \
-libpng-dev \
-libwebp-dev \
-libxpm-dev
+  libmagickwand-dev \
+  libpq-dev \
+  libfreetype6-dev \
+  libjpeg62-turbo-dev \
+  libpng-dev \
+  libwebp-dev \
+  libxpm-dev
 
 RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/
 RUN docker-php-ext-install -j$(nproc) gd
+
+# xdebug
+RUN pecl install xdebug && docker-php-ext-enable xdebug
 
 # apache rewrite
 RUN a2enmod rewrite
