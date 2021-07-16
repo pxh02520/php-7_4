@@ -22,6 +22,13 @@ RUN apt-get install -y  libmagick++-dev \
 RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/
 RUN docker-php-ext-install -j$(nproc) gd
 
+# LDAP
+RUN apt-get update && \
+    apt-get install libldap2-dev -y && \
+    rm -rf /var/lib/apt/lists/* && \
+    docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ && \
+    docker-php-ext-install ldap
+
 # xdebug
 RUN pecl install xdebug && docker-php-ext-enable xdebug
 
