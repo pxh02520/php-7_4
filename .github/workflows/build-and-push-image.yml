@@ -22,7 +22,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: pxh02520/php-7_4
+          images: swada/php-7_4
           flavor: latest=true
 
       - name: Build and push Docker image
