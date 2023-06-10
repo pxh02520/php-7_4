@@ -1,7 +1,10 @@
 FROM php:7.4-apache
 
-COPY ./php.ini /usr/local/etc/php/
-COPY ./000-default.conf /etc/apache2/sites-enabled/
+#COPY . /usr/local/etc/php/
+#COPY . /etc/apache2/sites-enabled/
+
+COPY ./docker/php/ /usr/local/etc/php/
+COPY ./docker/apache/ /etc/apache2/sites-enabled/
 
 # db
 RUN apt-get update \
@@ -30,7 +33,7 @@ RUN apt-get update && \
     docker-php-ext-install ldap
 
 # xdebug
-RUN pecl install xdebug && docker-php-ext-enable xdebug
+RUN pecl install xdebug-2.9.8 && docker-php-ext-enable xdebug
 
 # apache rewrite
 RUN a2enmod rewrite
